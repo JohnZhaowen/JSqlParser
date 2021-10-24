@@ -9,16 +9,6 @@
  */
 package net.sf.jsqlparser.statement.alter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import net.sf.jsqlparser.statement.ReferentialAction;
 import net.sf.jsqlparser.statement.ReferentialAction.Action;
 import net.sf.jsqlparser.statement.ReferentialAction.Type;
@@ -26,6 +16,8 @@ import net.sf.jsqlparser.statement.create.table.ColDataType;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.Index;
 import net.sf.jsqlparser.statement.select.PlainSelect;
+
+import java.util.*;
 
 @SuppressWarnings({"PMD.CyclomaticComplexity"})
 public class AlterExpression {
@@ -36,6 +28,7 @@ public class AlterExpression {
   private String columnName;
   private String columnOldName;
   // private ColDataType dataType;
+  private boolean constraintIfExists;
 
   private List<ColumnDataType> colDataTypeList;
   private List<ColumnDropNotNull> columnDropNotNullList;
@@ -285,24 +278,28 @@ public class AlterExpression {
     return this.constraintName;
   }
 
-  public void setConstraintName(final String constraintName) {
-    this.constraintName = constraintName;
-  }
+    public void setConstraintName(final String constraintName) {
+        this.constraintName = constraintName;
+    }
 
-  public boolean isUsingIfExists() {
-    return usingIfExists;
-  }
+    public boolean isUsingIfExists() {
+        return usingIfExists;
+    }
 
-  public void setUsingIfExists(boolean usingIfExists) {
-    this.usingIfExists = usingIfExists;
-  }
+    public void setConstraintIfExists(boolean constraintIfExists) {
+        this.constraintIfExists = constraintIfExists;
+    }
 
-  public List<String> getPkColumns() {
-    return pkColumns;
-  }
+    public void setUsingIfExists(boolean usingIfExists) {
+        this.usingIfExists = usingIfExists;
+    }
 
-  public void setPkColumns(List<String> pkColumns) {
-    this.pkColumns = pkColumns;
+    public List<String> getPkColumns() {
+        return pkColumns;
+    }
+
+    public void setPkColumns(List<String> pkColumns) {
+        this.pkColumns = pkColumns;
   }
 
   public List<String> getUkColumns() {
@@ -373,8 +370,8 @@ public class AlterExpression {
   public String toString() {
 
     StringBuilder b = new StringBuilder();
-    
-    if (operation== AlterOperation.UNSPECIFIC) {
+
+      if (operation== AlterOperation.UNSPECIFIC) {
         b.append(optionalSpecifier);
     } else if (operation== AlterOperation.RENAME_TABLE) {
 
