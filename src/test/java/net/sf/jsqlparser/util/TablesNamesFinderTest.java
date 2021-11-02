@@ -44,7 +44,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-
+/**
+ * 表明查询器
+ * 1. 将sql包装成Statement
+ * 2. 通过TablesNamesFinder解析Statement，获取tableNames
+ */
 public class TablesNamesFinderTest {
 
     private static CCJSqlParserManager pm = new CCJSqlParserManager();
@@ -132,7 +136,7 @@ public class TablesNamesFinderTest {
 
         String sql = "SELECT * FROM MY_TABLE1, MY_TABLE2, (SELECT * FROM MY_TABLE3) LEFT OUTER JOIN MY_TABLE4 "
                 + " WHERE ID = (SELECT MAX(ID) FROM MY_TABLE5) AND ID2 IN (SELECT * FROM MY_TABLE6)";
-        net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+        Statement statement = pm.parse(new StringReader(sql));
 
         // now you should use a class that implements StatementVisitor to decide what to
         // do

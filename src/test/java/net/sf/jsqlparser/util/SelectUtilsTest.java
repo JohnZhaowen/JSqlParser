@@ -31,6 +31,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * select语句的拼接
+ */
 public class SelectUtilsTest {
 
     public SelectUtilsTest() {
@@ -118,10 +121,15 @@ public class SelectUtilsTest {
         table2.setAlias(new Alias("tab2"));
 
         List<? extends Expression> colunas = Arrays.
-                asList(new Column(table1, "col1"), new Column(table1, "col2"), new Column(table1, "col3"), new Column(table2, "b1"), new Column(table2, "b2"));
+                asList(
+                        new Column(table1, "col1"),
+                        new Column(table1, "col2"),
+                        new Column(table1, "col3"),
+                        new Column(table2, "b1"),
+                        new Column(table2, "b2")
+                );
 
-        Select select = SelectUtils.buildSelectFromTableAndExpressions(table1, colunas.
-                toArray(new Expression[colunas.size()]));
+        Select select = SelectUtils.buildSelectFromTableAndExpressions(table1, colunas.toArray(new Expression[colunas.size()]));
 
         final EqualsTo equalsTo = new EqualsTo();
         equalsTo.setLeftExpression(new Column(table1, "col1"));
@@ -133,12 +141,13 @@ public class SelectUtilsTest {
                 select.toString());
     }
 
+    @Test
     public void testTableAliasIssue311_2() {
         Table table1 = new Table("mytable1");
         table1.setAlias(new Alias("tab1"));
 
         Column col = new Column(table1, "col1");
         assertEquals("tab1.col1", col.toString());
-        assertEquals("mytable.col1", col.getFullyQualifiedName());
+        assertEquals("mytable1.col1", col.getFullyQualifiedName());
     }
 }
