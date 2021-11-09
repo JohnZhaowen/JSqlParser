@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 
 /**
@@ -88,5 +89,13 @@ public class ExpressionList implements ItemsList {
         List<Expression> collection = Optional.ofNullable(getExpressions()).orElseGet(ArrayList::new);
         collection.addAll(expressions);
         return this.withExpressions(collection);
+    }
+
+    public static void main(String[] args) {
+        ExpressionList expressionList = new ExpressionList();
+        System.out.println(expressionList.withUsingBrackets(true)
+                .withExpressions(Arrays.asList(new StringValue("a"), new StringValue("b")))
+                .toString());
+
     }
 }

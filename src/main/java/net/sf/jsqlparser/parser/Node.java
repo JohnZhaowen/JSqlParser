@@ -11,12 +11,17 @@
 /* JavaCCOptions:MULTI=false,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=true,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package net.sf.jsqlparser.parser;
 
-/* All AST nodes must implement this interface.  It provides basic
-   machinery for constructing the parent and child relationships
-   between nodes. */
 
-public
-interface Node {
+/**
+ * All AST nodes must implement this interface.  It provides basic
+ * machinery for constructing the parent and child relationships
+ * between nodes.
+ * 抽象语法树节点都必需实现该接口，该接口提供了构建父子几点关系的基本机制
+ *
+ */
+
+
+public interface Node {
 
   /** This method is called after the node has been made the current
     node.  It indicates that child nodes can now be added to it. */

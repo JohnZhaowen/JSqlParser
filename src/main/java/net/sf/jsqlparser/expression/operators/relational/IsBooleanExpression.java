@@ -11,6 +11,7 @@ package net.sf.jsqlparser.expression.operators.relational;
 
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
 
 public class IsBooleanExpression extends ASTNodeAccessImpl implements Expression {
@@ -74,5 +75,11 @@ public class IsBooleanExpression extends ASTNodeAccessImpl implements Expression
 
     public <E extends Expression> E getLeftExpression(Class<E> type) {
         return type.cast(getLeftExpression());
+    }
+
+    public static void main(String[] args) {
+        IsBooleanExpression isBooleanExpression = new IsBooleanExpression();
+        System.out.println(isBooleanExpression.withLeftExpression(new StringValue("true"))
+                .withNot(true).withIsTrue(true).toString());
     }
 }

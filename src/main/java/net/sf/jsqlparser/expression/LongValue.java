@@ -27,6 +27,7 @@ public class LongValue extends ASTNodeAccessImpl implements Expression {
 
     public LongValue(final String value) {
         String val = value;
+        //去除前导加号
         if (val.charAt(0) == '+') {
             val = val.substring(1);
         }

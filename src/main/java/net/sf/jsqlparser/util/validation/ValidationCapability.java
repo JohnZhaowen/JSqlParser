@@ -22,9 +22,6 @@ public interface ValidationCapability {
 
     /**
      * Validate and add {@link ValidationException}'s to given consumer.
-     *
-     * @param context
-     * @param errorConsumer
      */
     void validate(ValidationContext context, Consumer<ValidationException> errorConsumer);
 

@@ -32,11 +32,22 @@ public class SignedExpression extends ASTNodeAccessImpl implements Expression {
         return sign;
     }
 
+    /**
+     * 为什么不是赋值放在校验之后呢
+     * @param sign
+     */
     public final void setSign(char sign) {
         this.sign = sign;
         if (sign != '+' && sign != '-' && sign != '~') {
             throw new IllegalArgumentException("illegal sign character, only + - ~ allowed");
         }
+
+        /**
+         *if (sign != '+' && sign != '-' && sign != '~') {
+         *  throw new IllegalArgumentException("illegal sign character, only + - ~ allowed");
+         *}
+         *this.sign = sign;
+         */
     }
 
     public Expression getExpression() {
@@ -69,5 +80,19 @@ public class SignedExpression extends ASTNodeAccessImpl implements Expression {
 
     public <E extends Expression> E getExpression(Class<E> type) {
         return type.cast(getExpression());
+    }
+
+    public static void main(String[] args) {
+        SignedExpression signedExpression = new SignedExpression();
+        try {
+            signedExpression.setSign('&');
+        }catch (Exception ex) {
+
+        }
+
+        signedExpression.setExpression(new LongValue(4));
+
+
+        System.out.println(signedExpression);
     }
 }

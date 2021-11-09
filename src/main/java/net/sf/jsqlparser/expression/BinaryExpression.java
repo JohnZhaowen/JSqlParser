@@ -14,12 +14,12 @@ import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
 /**
  * A basic class for binary expressions, that is expressions having a left member and a right member
  * which are in turn expressions.
+ *
  */
 public abstract class BinaryExpression extends ASTNodeAccessImpl implements Expression {
 
     private Expression leftExpression;
     private Expression rightExpression;
-    // private boolean not = false;
 
     public BinaryExpression() {
     }
@@ -50,23 +50,15 @@ public abstract class BinaryExpression extends ASTNodeAccessImpl implements Expr
         rightExpression = expression;
     }
 
-    // public void setNot() {
-    // not = true;
-    // }
-    //
-    // public void removeNot() {
-    // not = false;
-    // }
-    //
-    // public boolean isNot() {
-    // return not;
-    // }
     @Override
     public String toString() {
-        return // (not ? "NOT " : "") +
-                getLeftExpression() + " " + getStringExpression() + " " + getRightExpression();
+        return getLeftExpression() + " " + getStringExpression() + " " + getRightExpression();
     }
 
+    /**
+     * 该方法返回表达式的符号表示形式，例如Addtion使用+表示
+     * @return
+     */
     public abstract String getStringExpression();
 
     public <E extends Expression> E getLeftExpression(Class<E> type) {

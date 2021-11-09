@@ -9,7 +9,6 @@
  */
 package net.sf.jsqlparser.expression;
 
-import static org.junit.Assert.assertEquals;
 import net.sf.jsqlparser.JSQLParserException;
 import org.junit.Test;
 
@@ -17,6 +16,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
 
 public class TimestampValueTest {
 
@@ -36,5 +37,12 @@ public class TimestampValueTest {
         TimestampValue tv = new TimestampValue("'" + currentDate + "'");
         System.out.println(tv.toString());
         assertEquals("'" + currentDate + "'", tv.getRawValue());
+    }
+
+    @Test
+    public void testTimestampValueToString() {
+        String dateStr = "2021-11-06 13:23:37.334";
+        TimestampValue tv = new TimestampValue(dateStr);
+        assertEquals("{ts '2021-11-06 13:23:37.334'}", tv.toString());
     }
 }

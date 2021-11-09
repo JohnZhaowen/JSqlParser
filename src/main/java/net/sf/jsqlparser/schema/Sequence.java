@@ -18,6 +18,7 @@ import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
 
 /**
  * Represents the database type for a {@code SEQUENCE}
+ * 参考：https://blog.csdn.net/u013187074/article/details/52818616+
  */
 public class Sequence extends ASTNodeAccessImpl implements MultiPartName {
 

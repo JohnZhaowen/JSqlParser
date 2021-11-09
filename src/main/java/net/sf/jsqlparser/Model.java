@@ -11,7 +11,9 @@ package net.sf.jsqlparser;
 
 /**
  * <p>A marker interface for jsqlparser-model-classes.</p>
- * <p>The datastructure where the sql syntax is represented by a tree consists of {@link Model}'s</p>   
+ * <p>The datastructure where the sql syntax is represented by a tree consists of {@link Model}'s</p>
+ * Model组成了sql语法树
+ * Model只是一个标识接口
  */
 public interface Model {
 

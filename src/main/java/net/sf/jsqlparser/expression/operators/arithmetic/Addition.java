@@ -25,13 +25,23 @@ public class Addition extends BinaryExpression {
         return "+";
     }
 
+    /**
+     * 只是进行了返回值的强转
+     * @param expression
+     * @return
+     */
     @Override
-    public Addition withLeftExpression(Expression arg0) {
-        return (Addition) super.withLeftExpression(arg0);
+    public Addition withLeftExpression(Expression expression) {
+        return (Addition) super.withLeftExpression(expression);
     }
 
+    /**
+     * 只是进行了返回值的强转
+     * @param expression
+     * @return
+     */
     @Override
-    public Addition withRightExpression(Expression arg0) {
-        return (Addition) super.withRightExpression(arg0);
+    public Addition withRightExpression(Expression expression) {
+        return (Addition) super.withRightExpression(expression);
     }
 }

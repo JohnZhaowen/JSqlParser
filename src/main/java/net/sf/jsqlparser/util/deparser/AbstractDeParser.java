@@ -12,6 +12,9 @@ package net.sf.jsqlparser.util.deparser;
 /**
  * A base for a Statement DeParser
  *
+ * sql逆解析器，就是将对应的Statement反向解析成String类型的sql语句
+ *
+ *
  * @param <S> the type of statement this DeParser supports
  */
 abstract class AbstractDeParser<S> {

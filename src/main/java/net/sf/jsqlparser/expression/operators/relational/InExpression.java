@@ -11,7 +11,10 @@ package net.sf.jsqlparser.expression.operators.relational;
 
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
+
+import java.util.Arrays;
 
 public class InExpression extends ASTNodeAccessImpl implements Expression, SupportsOldOracleJoinSyntax {
 
@@ -180,5 +183,13 @@ public class InExpression extends ASTNodeAccessImpl implements Expression, Suppo
 
     public <E extends Expression> E getRightExpression(Class<E> type) {
         return type.cast(getRightExpression());
+    }
+
+    public static void main(String[] args) {
+        InExpression inExpression = new InExpression();
+        System.out.println(inExpression.withLeftExpression(new StringValue("a"))
+                .withRightItemsList(new ExpressionList().withUsingBrackets(true)
+                        .withExpressions(Arrays.asList(new StringValue("a"), new StringValue("b"))))
+                .toString());
     }
 }

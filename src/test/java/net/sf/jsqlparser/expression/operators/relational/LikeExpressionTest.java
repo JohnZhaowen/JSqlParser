@@ -9,9 +9,10 @@
  */
 package net.sf.jsqlparser.expression.operators.relational;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import net.sf.jsqlparser.expression.StringValue;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -24,5 +25,15 @@ public class LikeExpressionTest {
         LikeExpression instance = new LikeExpression();
         assertFalse(instance.isNot());
         assertTrue(instance.withNot(true).isNot());
+    }
+
+    @Test
+    public void testLike() {
+        LikeExpression instance = new LikeExpression();
+        instance.withLeftExpression(new StringValue("name"))
+                .withCaseInsensitive(true)
+                .withEscape("ss")
+                .withRightExpression(new StringValue("LiSi"));
+        assertEquals("'name' ILIKE 'LiSi' ESCAPE 'ss'", instance.toString());
     }
 }

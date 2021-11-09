@@ -21,19 +21,14 @@ public final class TimestampValue extends ASTNodeAccessImpl implements Expressio
 
     private Timestamp value;
     private String rawValue;
+    //单引号
     private static final char QUOTATION = '\'';
 
     public TimestampValue() {
-        // empty constructor
     }
 
     public TimestampValue(String value) {
-    //        if (value == null) {
-    //            throw new IllegalArgumentException("null string");
-    //        } else {
-    //            setRawValue(value);
-    //        }
-              setRawValue(Objects.requireNonNull(value, "The Timestamp string value must not be null."));
+        setRawValue(Objects.requireNonNull(value, "The Timestamp string value must not be null."));
     }
 
     @Override
@@ -58,12 +53,13 @@ public final class TimestampValue extends ASTNodeAccessImpl implements Expressio
         if (rawValue.charAt(0) == QUOTATION) {
             this.value = Timestamp.valueOf(rawValue.substring(1, rawValue.length() - 1));
         } else {
-            this.value = Timestamp.valueOf(rawValue.substring(0, rawValue.length()));
+            this.value = Timestamp.valueOf(rawValue);
         }
     }
 
     @Override
     public String toString() {
+        //toString的value使用单引号包裹
         return "{ts '" + value + "'}";
     }
 

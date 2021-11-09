@@ -11,6 +11,7 @@ package net.sf.jsqlparser.expression.operators.relational;
 
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
+import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.parser.ASTNodeAccessImpl;
 
 public class ExistsExpression extends ASTNodeAccessImpl implements Expression {
@@ -60,5 +61,10 @@ public class ExistsExpression extends ASTNodeAccessImpl implements Expression {
 
     public <E extends Expression> E getRightExpression(Class<E> type) {
         return type.cast(getRightExpression());
+    }
+
+    public static void main(String[] args) {
+        ExistsExpression existsExpression = new ExistsExpression();
+        System.out.println(existsExpression.withRightExpression(new LongValue(2)).toString());
     }
 }

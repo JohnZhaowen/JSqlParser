@@ -24,6 +24,7 @@ import java.util.Set;
 public interface Validator<S> {
 
     /**
+     * 根据校验结果判断校验对象是否有效，没有入参，则表示只要有报错信息则非有效
      * @return <code>true</code>, all {@link ValidationCapability}'s have no errors
      */
     default boolean isValid() {
@@ -31,6 +32,7 @@ public interface Validator<S> {
     }
 
     /**
+     * 根据校验结果判断校验对象是否有效，根据ValidationCapability判断是否有报错信息
      * @param capabilities
      * @return <code>true</code>, if the given {@link ValidationCapability}'s have no errors.
      *         <code>false</code> otherwise.
@@ -40,11 +42,13 @@ public interface Validator<S> {
     }
 
     /**
+     * 获取所有的校验报错信息
      * @return the {@link ValidationCapability}'s requested mapped to a set of error-messages
      */
     Map<ValidationCapability, Set<ValidationException>> getValidationErrors();
 
     /**
+     * 获取指定capabilities的报错信息
      * @param capabilities
      * @return the filtered view of requested {@link ValidationCapability}'s mapped to a set
      *         of error-messages
@@ -55,6 +59,7 @@ public interface Validator<S> {
     }
 
     /**
+     * 获取指定capabilities的报错信息
      * @param capabilities
      * @return the filtered view of requested {@link ValidationCapability}'s mapped
      *         to a set of error-messages
@@ -69,20 +74,6 @@ public interface Validator<S> {
         }
         return map;
     }
-
-    // /**
-    // * Set the {@link ValidationCapability}'s this {@link Validator} should
-    // check.
-    // *
-    // * @param capabilities
-    // */
-    // public void setCapabilities(Collection<ValidationCapability>
-    // capabilities);
-    //
-    // /**
-    // * @param configuration
-    // */
-    // public void setConfiguration(FeatureConfiguration configuration);
 
     /**
      * @param ctx

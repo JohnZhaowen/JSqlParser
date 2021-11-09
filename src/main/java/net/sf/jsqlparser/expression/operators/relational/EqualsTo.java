@@ -11,6 +11,7 @@ package net.sf.jsqlparser.expression.operators.relational;
 
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
+import net.sf.jsqlparser.expression.LongValue;
 
 public class EqualsTo extends ComparisonOperator {
 
@@ -47,5 +48,11 @@ public class EqualsTo extends ComparisonOperator {
     @Override
     public EqualsTo withOraclePriorPosition(int arg0) {
         return (EqualsTo) super.withOraclePriorPosition(arg0);
+    }
+
+    public static void main(String[] args) {
+        EqualsTo equalsTo = new EqualsTo();
+        System.out.println(equalsTo.withLeftExpression(new LongValue(2)).withRightExpression(new LongValue(2))
+                .toString());
     }
 }

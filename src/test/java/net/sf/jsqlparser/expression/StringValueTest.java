@@ -71,6 +71,8 @@ public class StringValueTest {
     @Test
     public void testPrefixes() {
         checkStringValue("E'test'", "test", "E");
+        //代码的校验没有校验到最后一个字符
+        checkStringValue("E'testA", "test", "E");
         checkStringValue("'test'", "test", null);
 
     }

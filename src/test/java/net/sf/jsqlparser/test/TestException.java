@@ -9,6 +9,9 @@
  */
 package net.sf.jsqlparser.test;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 public class TestException extends Exception {
 
     private Throwable cause = null;
@@ -41,7 +44,7 @@ public class TestException extends Exception {
     }
 
     @Override
-    public void printStackTrace(java.io.PrintWriter pw) {
+    public void printStackTrace(PrintWriter pw) {
         super.printStackTrace(pw);
         if (cause != null) {
             pw.println("Caused by:");
@@ -50,7 +53,7 @@ public class TestException extends Exception {
     }
 
     @Override
-    public void printStackTrace(java.io.PrintStream ps) {
+    public void printStackTrace(PrintStream ps) {
         super.printStackTrace(ps);
         if (cause != null) {
             ps.println("Caused by:");

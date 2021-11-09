@@ -9,7 +9,9 @@
  */
 package net.sf.jsqlparser.util.validation.validator;
 
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.parser.feature.Feature;
+import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.util.validation.ValidationCapability;
 
@@ -17,7 +19,6 @@ import net.sf.jsqlparser.util.validation.ValidationCapability;
  * @author gitmotte
  */
 public class DeleteValidator extends AbstractValidator<Delete> {
-
 
     @Override
     public void validate(Delete delete) {
@@ -45,6 +46,14 @@ public class DeleteValidator extends AbstractValidator<Delete> {
         if (delete.getLimit() != null) {
             getValidator(LimitValidator.class).validate(delete.getLimit());
         }
+
+    }
+
+    public static void main(String[] args) throws Exception{
+        Delete delete = (Delete)CCJSqlParserUtil.parse("DELETE FROM TABLE1 WHERE A = 'name'");
+
+        DeleteValidator validator = new DeleteValidator();
+        validator.validate(delete);
 
     }
 

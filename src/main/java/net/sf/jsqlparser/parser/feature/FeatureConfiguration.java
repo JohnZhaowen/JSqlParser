@@ -58,7 +58,7 @@ public class FeatureConfiguration {
     }
 
     public boolean getAsBoolean(Feature f) {
-        return Boolean.valueOf(String.valueOf(getValue(f)));
+        return Boolean.parseBoolean(String.valueOf(getValue(f)));
     }
 
     public String getAsString(Feature f) {

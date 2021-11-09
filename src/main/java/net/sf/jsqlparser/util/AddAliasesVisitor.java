@@ -19,12 +19,15 @@ import net.sf.jsqlparser.statement.values.ValuesStatement;
  * recognized and preserved. This class standard uses a prefix of A and a counter to generate new
  * aliases (e.g. A1, A5, ...). This behaviour can be altered.
  *
+ * 向select语句选择的每个列和表达式添加别名。 识别并保存现有的别名。
+ * 这个类标准使用前缀A和计数器来生成新的别名(例如A1, A5，…)。 这种行为是可以改变的。
+ *
  * @author tw
  */
 public class AddAliasesVisitor implements SelectVisitor, SelectItemVisitor {
 
     private static final String NOT_SUPPORTED_YET = "Not supported yet.";
-    private List<String> aliases = new LinkedList<String>();
+    private List<String> aliases = new LinkedList<>();
     private boolean firstRun = true;
     private int counter = 0;
     private String prefix = "A";

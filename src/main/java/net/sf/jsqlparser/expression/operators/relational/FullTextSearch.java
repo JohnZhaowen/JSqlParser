@@ -9,12 +9,8 @@
  */
 package net.sf.jsqlparser.expression.operators.relational;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.expression.JdbcNamedParameter;
@@ -112,5 +108,12 @@ public class FullTextSearch extends ASTNodeAccessImpl implements Expression {
         List<Column> collection = Optional.ofNullable(getMatchColumns()).orElseGet(ArrayList::new);
         collection.addAll(matchColumns);
         return this.withMatchColumns(collection);
+    }
+
+    public static void main(String[] args) {
+        FullTextSearch fullTextSearch = new FullTextSearch();
+        System.out.println(fullTextSearch.withMatchColumns(Arrays.asList(new Column("a"), new Column("b")))
+                .withAgainstValue(new StringValue("c"))
+                .withSearchModifier("d").toString());
     }
 }

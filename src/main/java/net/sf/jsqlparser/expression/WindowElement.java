@@ -73,4 +73,8 @@ public class WindowElement {
         return this;
     }
 
+    public static void main(String[] args) {
+
+    }
+
 }

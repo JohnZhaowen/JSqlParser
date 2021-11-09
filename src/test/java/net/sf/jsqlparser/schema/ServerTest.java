@@ -9,8 +9,9 @@
  */
 package net.sf.jsqlparser.schema;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ServerTest {
 
@@ -38,17 +39,20 @@ public class ServerTest {
         assertEquals(fullServerName, server.toString());
 
     }
+
     @Test
     public void testServerNameAndInstanceParsing2() throws Exception {
         String simpleName = "LOCALHOST";
         final Server server = new Server(simpleName);
         assertEquals(simpleName, server.getFullyQualifiedName());
     }
+
     @Test
     public void testServerNameAndInstanceParsingNull() throws Exception {
         final Server server = new Server(null);
         assertEquals("", server.getFullyQualifiedName());
     }
+
     @Test
     public void testServerNameAndInstancePassValues() throws Exception {
         final Server server = new Server("SERVER", "INSTANCE");
@@ -56,6 +60,7 @@ public class ServerTest {
         assertEquals("INSTANCE", server.getInstanceName());
         assertEquals(String.format("[%s\\%s]", "SERVER", "INSTANCE"), server.getFullyQualifiedName());
     }
+
     @Test
     public void testServerNameNull() throws Exception {
         final Server server = new Server(null, "INSTANCE");
@@ -63,6 +68,7 @@ public class ServerTest {
         assertEquals("INSTANCE", server.getInstanceName());
         assertEquals("", server.getFullyQualifiedName());
     }
+
     @Test
     public void testServerNameEmpty() throws Exception {
         final Server server = new Server("", "INSTANCE");
@@ -70,6 +76,7 @@ public class ServerTest {
         assertEquals("INSTANCE", server.getInstanceName());
         assertEquals("", server.getFullyQualifiedName());
     }
+
     @Test
     public void testInstanceNameNull() throws Exception {
         final Server server = new Server("LOCALHOST", null);
@@ -77,11 +84,12 @@ public class ServerTest {
         assertEquals(null, server.getInstanceName());
         assertEquals("[LOCALHOST]", server.getFullyQualifiedName());
     }
+
     @Test
     public void testInstanceNameEmpty() throws Exception {
         final Server server = new Server("LOCALHOST", "");
-         assertEquals("LOCALHOST", server.getServerName());
-         assertEquals("", server.getInstanceName());
+        assertEquals("LOCALHOST", server.getServerName());
+        assertEquals("", server.getInstanceName());
         assertEquals("[LOCALHOST]", server.getFullyQualifiedName());
     }
 }

@@ -29,16 +29,26 @@ public final class StringValue extends ASTNodeAccessImpl implements Expression {
 
     public StringValue(String escapedValue) {
         // removing "'" at the start and at the end
+
+        //如果被单引号包裹，则去除前后的单引号直接赋值给value，结束
         if (escapedValue.startsWith("'") && escapedValue.endsWith("'")) {
             value = escapedValue.substring(1, escapedValue.length() - 1);
             return;
         }
 
+        //字符长度大于2
         if (escapedValue.length() > 2) {
             for (String p : ALLOWED_PREFIXES) {
-                if (escapedValue.length() > p.length() && escapedValue.substring(0, p.length()).equalsIgnoreCase(p)
-                        && escapedValue.charAt(p.length()) == '\'') {
+                //字符长度大于前缀长度
+                if (escapedValue.length() > p.length()
+                        //入参截取当前遍历的前缀长度，且必需是当前遍历的前缀相等
+                        && escapedValue.substring(0, p.length()).equalsIgnoreCase(p)
+                        //入参的前缀字符后一个字符为单引号
+                        && escapedValue.charAt(p.length()) == '\''
+                        //&& escapedValue.charAt(escapedValue.length() - 1) == '\''
+                ) {
                     this.prefix = p;
+                    //去除前缀及单引号
                     value = escapedValue.substring(p.length() + 1, escapedValue.length() - 1);
                     return;
                 }
