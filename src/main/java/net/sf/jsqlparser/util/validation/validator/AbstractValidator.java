@@ -43,10 +43,20 @@ import net.sf.jsqlparser.util.validation.metadata.NamedObject;
  * A abstract base for a Validation
  * 所有的校验器都继承了该抽象类
  *
+ * 1.最为抽象的校验器方法
+ * 2.expression的校验方法
+ * 3.各种具体expression的校验方法
+ *
+ * 4.Feature校验器
+ * 5.Name校验器
+ * 6.FeatureAndName校验器
+ *
  * @param <S> the type of statement this DeParser supports
  * @author gitmotte
  */
 public abstract class AbstractValidator<S> implements Validator<S> {
+
+    //====================字段==============================
 
     private ValidationContext context = new ValidationContext();
 
@@ -60,38 +70,11 @@ public abstract class AbstractValidator<S> implements Validator<S> {
      */
     private Map<Class<? extends AbstractValidator<?>>, AbstractValidator<?>> validatorForwards = new HashMap<>();
 
-    public <T extends AbstractValidator<?>> T getValidator(Class<T> type) {
-        return type.cast(validatorForwards.computeIfAbsent(type, this::newObject));
-    }
+    //====================方法====================================
 
-    private <E extends Validator<?>> E newObject(Class<E> type) {
-        try {
-            E e = type.cast(type.getConstructor().newInstance());
-            e.setContext(context());
-            return e;
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            throw new IllegalStateException("Type " + type + " cannot be constructed by empty constructor!");
-        }
-    }
-
-    protected Consumer<ValidationException> getMessageConsumer(ValidationCapability c) {
-        return s -> putError(c, s);
-    }
-
-    protected ValidationContext context() {
-        return context(true);
-    }
-
-    protected ValidationContext context(boolean reInit) {
-        return context.reinit(reInit);
-    }
-
-    /**
-     * adds an error for this {@link ValidationCapability}
-     */
-    protected void putError(ValidationCapability capability, ValidationException error) {
-        errors.computeIfAbsent(capability, k -> new HashSet<>()).add(error);
+    @Override
+    public final void setContext(ValidationContext context) {
+        this.context = context;
     }
 
     @Override
@@ -111,27 +94,67 @@ public abstract class AbstractValidator<S> implements Validator<S> {
         return map;
     }
 
+    public <T extends AbstractValidator<?>> T getValidator(Class<T> type) {
+        return type.cast(validatorForwards.computeIfAbsent(type, this::newObject));
+    }
+
+    private <E extends Validator<?>> E newObject(Class<E> type) {
+        try {
+            E e = type.cast(type.getConstructor().newInstance());
+            e.setContext(context());
+            return e;
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            throw new IllegalStateException("Type " + type + " cannot be constructed by empty constructor!");
+        }
+    }
+
+    protected ValidationContext context() {
+        return context(true);
+    }
+
+    protected ValidationContext context(boolean reInit) {
+        return context.reinit(reInit);
+    }
+
+    protected Consumer<ValidationException> getMessageConsumer(ValidationCapability c) {
+        return s -> putError(c, s);
+    }
+
+    /**
+     * adds an error for this {@link ValidationCapability}
+     */
+    protected void putError(ValidationCapability capability, ValidationException error) {
+        errors.computeIfAbsent(capability, k -> new HashSet<>()).add(error);
+    }
+
     public Collection<ValidationCapability> getCapabilities() {
         return context().getCapabilities();
     }
 
-    @Override
-    public final void setContext(ValidationContext context) {
-        this.context = context;
-    }
 
+    //======================抽象校验器，校验的对象element，校验器consumer========================
     protected <E> void validateOptional(E element, Consumer<E> elementConsumer) {
         if (element != null) {
             elementConsumer.accept(element);
         }
     }
 
-    protected <E, V extends Validator<?>> void validateOptionalList(
-            List<E> elementList, Supplier<V> validatorSupplier, BiConsumer<E, V> elementConsumer) {
+    protected <E, V extends Validator<?>> void validateOptionalList(List<E> elementList, Supplier<V> validatorSupplier, BiConsumer<E, V> elementConsumer) {
         if (isNotEmpty(elementList)) {
             V validator = validatorSupplier.get();
             elementList.forEach(e -> elementConsumer.accept(e, validator));
         }
+    }
+
+
+    //=====================expression校验器===========================
+    protected void validateOptionalExpression(Expression expression) {
+        validateOptional(expression, e -> e.accept(getValidator(ExpressionValidator.class)));
+    }
+
+    protected void validateOptionalExpression(Expression expression, ExpressionValidator v) {
+        validateOptional(expression, e -> e.accept(v));
     }
 
     /**
@@ -141,22 +164,20 @@ public abstract class AbstractValidator<S> implements Validator<S> {
         if (multiExprList != null) {
             ExpressionValidator v = getValidator(ExpressionValidator.class);
             multiExprList.getExpressionLists().stream().map(ExpressionList::getExpressions).flatMap(List::stream)
-            .forEach(e -> e.accept(v));
+                    .forEach(e -> e.accept(v));
         }
-    }
-
-    protected void validateOptionalExpression(Expression expression) {
-        validateOptional(expression, e -> e.accept(getValidator(ExpressionValidator.class)));
-    }
-
-    protected void validateOptionalExpression(Expression expression, ExpressionValidator v) {
-        validateOptional(expression, e -> e.accept(v));
     }
 
     protected void validateOptionalExpressions(List<? extends Expression> expressions) {
         validateOptionalList(expressions, () -> getValidator(ExpressionValidator.class), (o, v) -> o.accept(v));
     }
 
+    //==================各种具体的校验器===================
+
+    /**
+     * from
+     * @param fromItems
+     */
     protected void validateOptionalFromItems(FromItem... fromItems) {
         validateOptionalFromItems(Arrays.asList(fromItems));
     }
@@ -166,6 +187,10 @@ public abstract class AbstractValidator<S> implements Validator<S> {
                 this::validateOptionalFromItem);
     }
 
+    /**
+     * order by
+     * @param orderByElements
+     */
     protected void validateOptionalOrderByElements(List<OrderByElement> orderByElements) {
         validateOptionalList(orderByElements, () -> getValidator(OrderByValidator.class), (o, v) -> o.accept(v));
     }
@@ -182,6 +207,27 @@ public abstract class AbstractValidator<S> implements Validator<S> {
         validateOptional(itemsList, i -> i.accept(getValidator(ItemsListValidator.class)));
     }
 
+
+    /**
+     * 以下分成3大类，一类是Feature相关的校验，一类是named相关的校验，一类是named+feature
+     * 开始用到context和capability
+     */
+
+    //==================================Feature相关============================================================
+
+    /**
+     * Validates if given {@link ValidationCapability} is a
+     * {@link FeatureSetValidation}
+     *
+     */
+    protected void validateFeature(ValidationCapability capability, Feature feature) {
+        if (capability instanceof FeatureSetValidation) {
+            capability.validate(context().put(FeatureContext.feature, feature),
+                    getMessageConsumer(capability));
+        }
+    }
+
+
     /**
      * Iterates through all {@link ValidationCapability} and validates the feature
      * with {@link #validateFeature(ValidationCapability, Feature)}
@@ -190,61 +236,6 @@ public abstract class AbstractValidator<S> implements Validator<S> {
     protected void validateFeature(Feature feature) {
         for (ValidationCapability c : getCapabilities()) {
             validateFeature(c, feature);
-        }
-    }
-
-    /**
-     * Iterates through all {@link ValidationCapability} and validates
-     * <ul>
-     * <li>the name with
-     * {@link #validateName(ValidationCapability, NamedObject, String)}</li>
-     * <li>the feature with
-     * {@link #validateFeature(ValidationCapability, Feature)}</li>
-     * </ul>
-     *
-     * @param fqn - fully qualified name of named object
-     */
-    protected void validateFeatureAndName(Feature feature, NamedObject namedObject, String fqn) {
-        validateFeatureAndNameWithAlias(feature, namedObject, fqn, null);
-    }
-
-    /**
-     * Iterates through all {@link ValidationCapability} and validates
-     * <ul>
-     * <li>the name with
-     * {@link #validateName(ValidationCapability, NamedObject, String)}</li>
-     * <li>the feature with
-     * {@link #validateFeature(ValidationCapability, Feature)}</li>
-     * </ul>
-     *
-     * @param fqn - fully qualified name of named object
-     */
-    protected void validateFeatureAndNameWithAlias(Feature feature, NamedObject namedObject, String fqn, String alias) {
-        for (ValidationCapability c : getCapabilities()) {
-            validateFeature(c, feature);
-            validateNameWithAlias(c, namedObject, fqn, alias, true);
-        }
-    }
-
-    /**
-     * Iterates through all {@link ValidationCapability} and validates for the name
-     * with {@link #validateName(ValidationCapability, NamedObject, String)}
-     *
-     * @param fqn - fully qualified name of named object
-     */
-    protected void validateName(NamedObject namedObject, String fqn) {
-        validateNameWithAlias(namedObject, fqn, null);
-    }
-
-    /**
-     * Iterates through all {@link ValidationCapability} and validates for the name
-     * with {@link #validateName(ValidationCapability, NamedObject, String)}
-     *
-     * @param fqn - fully qualified name of named object
-     */
-    protected void validateNameWithAlias(NamedObject namedObject, String fqn, String alias) {
-        for (ValidationCapability c : getCapabilities()) {
-            validateNameWithAlias(c, namedObject, fqn, alias, true);
         }
     }
 
@@ -276,15 +267,75 @@ public abstract class AbstractValidator<S> implements Validator<S> {
         validateFeature(capability, element != null, feature);
     }
 
+    //========================================Named相关======================================================
+
+    /**
+     * @param fqn - fully qualified name of named object
+     */
+    protected void validateName(ValidationCapability capability, NamedObject namedObject, String fqn) {
+        validateNameWithAlias(capability, namedObject, fqn, null, true);
+    }
+
+    /**
+     * @param fqn - fully qualified name of named object
+     */
+    protected void validateName(ValidationCapability capability, NamedObject namedObject, String fqn, boolean exists,
+                                NamedObject... parents) {
+        validateNameWithAlias(capability, namedObject, fqn, null, exists, parents);
+    }
+
+
+    /**
+     * Iterates through all {@link ValidationCapability} and validates for the name
+     * with {@link #validateName(ValidationCapability, NamedObject, String)}
+     *
+     * @param fqn - fully qualified name of named object
+     */
+    protected void validateName(NamedObject namedObject, String fqn) {
+        validateNameWithAlias(namedObject, fqn, null);
+    }
+
+
+    protected void validateOptionalName(ValidationCapability capability, NamedObject namedObject, String name,
+                                        NamedObject... parents) {
+        validateOptionalNameWithAlias(capability, namedObject, name, (String) null, parents);
+    }
+
+    protected void validateOptionalName(ValidationCapability capability, NamedObject namedObject, String name,
+                                        String alias, boolean exists, NamedObject... parents) {
+        if (name != null) {
+            validateNameWithAlias(capability, namedObject, name, alias, exists, parents);
+        }
+    }
+
     /**
      * Validates if given {@link ValidationCapability} is a
-     * {@link FeatureSetValidation}
+     * {@link DatabaseMetaDataValidation}
      *
+     * @param fqn - fully qualified name of named object
+     * @param exists      - <code>true</code>, check for existence,
+     *                    <code>false</code>, check for non-existence
      */
-    protected void validateFeature(ValidationCapability capability, Feature feature) {
-        if (capability instanceof FeatureSetValidation) {
-            capability.validate(context().put(FeatureContext.feature, feature),
+    protected void validateNameWithAlias(ValidationCapability capability, NamedObject namedObject, String fqn, String alias,
+                                         boolean exists, NamedObject... parents) {
+        if (capability instanceof DatabaseMetaDataValidation) {
+            capability.validate(context()
+                            .put(MetadataContext.named,
+                                    new Named(namedObject, fqn).setAlias(alias).setParents(Arrays.asList(parents))) //
+                            .put(MetadataContext.exists, exists),
                     getMessageConsumer(capability));
+        }
+    }
+
+    /**
+     * Iterates through all {@link ValidationCapability} and validates for the name
+     * with {@link #validateName(ValidationCapability, NamedObject, String)}
+     *
+     * @param fqn - fully qualified name of named object
+     */
+    protected void validateNameWithAlias(NamedObject namedObject, String fqn, String alias) {
+        for (ValidationCapability c : getCapabilities()) {
+            validateNameWithAlias(c, namedObject, fqn, alias, true);
         }
     }
 
@@ -298,77 +349,71 @@ public abstract class AbstractValidator<S> implements Validator<S> {
         validateNameWithAlias(capability, namedObject, fqn, alias, true);
     }
 
-    /**
-     * @param fqn - fully qualified name of named object
-     */
-    protected void validateName(ValidationCapability capability, NamedObject namedObject, String fqn) {
-        validateNameWithAlias(capability, namedObject, fqn, null, true);
+
+    protected void validateOptionalNameWithAlias(ValidationCapability capability, NamedObject namedObject, String name,
+                                                 String alias, NamedObject... parents) {
+        validateOptionalName(capability, namedObject, name, alias, true, parents);
     }
 
-    /**
-     * Validates if given {@link ValidationCapability} is a
-     * {@link DatabaseMetaDataValidation}
-     *
-     * @param fqn - fully qualified name of named object
-     * @param exists      - <code>true</code>, check for existence,
-     *                    <code>false</code>, check for non-existence
-     */
-    protected void validateNameWithAlias(ValidationCapability capability, NamedObject namedObject, String fqn, String alias,
-            boolean exists, NamedObject... parents) {
-        if (capability instanceof DatabaseMetaDataValidation) {
-            capability.validate(context()
-                    .put(MetadataContext.named,
-                            new Named(namedObject, fqn).setAlias(alias).setParents(Arrays.asList(parents))) //
-                    .put(MetadataContext.exists, exists),
-                    getMessageConsumer(capability));
-        }
-    }
-
-    /**
-     * @param fqn - fully qualified name of named object
-     */
-    protected void validateName(ValidationCapability capability, NamedObject namedObject, String fqn, boolean exists,
-            NamedObject... parents) {
-        validateNameWithAlias(capability, namedObject, fqn, null, exists, parents);
-    }
 
     protected void validateOptionalColumnName(ValidationCapability capability, String name) {
         validateOptionalName(capability, NamedObject.column, name, null, true);
+    }
+
+    protected void validateOptionalColumnNames(ValidationCapability capability, List<String> columnNames,
+                                               NamedObject... parents) {
+        validateOptionalColumnNames(capability, columnNames, true, parents);
+    }
+
+    protected void validateOptionalColumnNames(ValidationCapability capability, List<String> columnNames,
+                                               boolean exists, NamedObject... parents) {
+        if (columnNames != null) {
+            columnNames.forEach(n -> validateOptionalName(capability, NamedObject.column, n, null, exists, parents));
+        }
     }
 
     protected void validateOptionalColumnNameWithAlias(ValidationCapability capability, String name, String alias) {
         validateOptionalName(capability, NamedObject.column, name, alias, true);
     }
 
-    protected void validateOptionalColumnNames(ValidationCapability capability, List<String> columnNames,
-            NamedObject... parents) {
-        validateOptionalColumnNames(capability, columnNames, true, parents);
+    //===============================FeatureAndName=============================================
+    /**
+     * Iterates through all {@link ValidationCapability} and validates
+     * <ul>
+     * <li>the name with
+     * {@link #validateName(ValidationCapability, NamedObject, String)}</li>
+     * <li>the feature with
+     * {@link #validateFeature(ValidationCapability, Feature)}</li>
+     * </ul>
+     *
+     * @param fqn - fully qualified name of named object
+     */
+    protected void validateFeatureAndName(Feature feature, NamedObject namedObject, String fqn) {
+        validateFeatureAndNameWithAlias(feature, namedObject, fqn, null);
     }
 
-    protected void validateOptionalColumnNames(ValidationCapability capability, List<String> columnNames,
-            boolean exists, NamedObject... parents) {
-        if (columnNames != null) {
-            columnNames.forEach(n -> validateOptionalName(capability, NamedObject.column, n, null, exists, parents));
+    /**
+     * Iterates through all {@link ValidationCapability} and validates
+     * <ul>
+     * <li>the name with
+     * {@link #validateName(ValidationCapability, NamedObject, String)}</li>
+     * <li>the feature with
+     * {@link #validateFeature(ValidationCapability, Feature)}</li>
+     * </ul>
+     *
+     * @param fqn - fully qualified name of named object
+     *
+     * 如果既校验Feature，又校验Name，那么就依次调用校验Feature和Name的方法
+     */
+    protected void validateFeatureAndNameWithAlias(Feature feature, NamedObject namedObject, String fqn, String alias) {
+        for (ValidationCapability c : getCapabilities()) {
+            validateFeature(c, feature);
+            validateNameWithAlias(c, namedObject, fqn, alias, true);
         }
     }
 
-    protected void validateOptionalNameWithAlias(ValidationCapability capability, NamedObject namedObject, String name,
-            String alias, NamedObject... parents) {
-        validateOptionalName(capability, namedObject, name, alias, true, parents);
-    }
 
-    protected void validateOptionalName(ValidationCapability capability, NamedObject namedObject, String name,
-            NamedObject... parents) {
-        validateOptionalNameWithAlias(capability, namedObject, name, (String) null, parents);
-    }
-
-    protected void validateOptionalName(ValidationCapability capability, NamedObject namedObject, String name,
-            String alias, boolean exists, NamedObject... parents) {
-        if (name != null) {
-            validateNameWithAlias(capability, namedObject, name, alias, exists, parents);
-        }
-    }
-
+    //================================工具类===================================
     protected boolean isNotEmpty(Collection<?> c) {
         return c != null && !c.isEmpty();
     }

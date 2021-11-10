@@ -20,8 +20,28 @@ import java.util.Set;
 /**
  * @author gitmotte
  * @param <S>
+ *  1. 设置上下文：setContext
+ *  2. 校验：validate
+ *  3. 是否有效：isValid
+ *  4. 如果校验失败，则获取检验的报错信息：getValidationErrors
+ *
  */
 public interface Validator<S> {
+
+    /**
+     * @param ctx
+     */
+    void setContext(ValidationContext ctx);
+
+    /**
+     * validates given statement.
+     *
+     * @param statement
+     * @see #getValidationErrors()
+     * @see #getValidationErrors(Collection)
+     * @see #getValidationErrors(ValidationCapability...)
+     */
+    void validate(S statement);
 
     /**
      * 根据校验结果判断校验对象是否有效，没有入参，则表示只要有报错信息则非有效
@@ -74,20 +94,5 @@ public interface Validator<S> {
         }
         return map;
     }
-
-    /**
-     * @param ctx
-     */
-    void setContext(ValidationContext ctx);
-
-    /**
-     * validates given statement.
-     *
-     * @param statement
-     * @see #getValidationErrors()
-     * @see #getValidationErrors(Collection)
-     * @see #getValidationErrors(ValidationCapability...)
-     */
-    void validate(S statement);
 
 }
