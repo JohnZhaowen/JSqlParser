@@ -26,6 +26,7 @@ public class Sequence extends ASTNodeAccessImpl implements MultiPartName {
     private static final int SCHEMA_IDX = 1;
     private static final int DATABASE_IDX = 2;
     private static final int SERVER_IDX = 3;
+    //同table的处理
     private List<String> partItems = new ArrayList<>();
 
     private List<Parameter> parameters;

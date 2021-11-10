@@ -31,6 +31,7 @@ public class Column extends ASTNodeAccessImpl implements Expression, MultiPartNa
     }
 
     public Column(List<String> nameParts) {
+        //nameParts的最后一位作为列名，其他的用于构建table
         this(nameParts.size() > 1 ? new Table(nameParts.subList(0, nameParts.size() - 1)) : null,
                 nameParts.get(nameParts.size() - 1));
     }

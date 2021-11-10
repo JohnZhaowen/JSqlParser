@@ -21,6 +21,7 @@ public class Synonym extends ASTNodeAccessImpl implements MultiPartName {
     private static final int SCHEMA_IDX = 1;
     private static final int DATABASE_IDX = 2;
     private static final int SERVER_IDX = 3;
+    //同table
     private List<String> partItems = new ArrayList<>();
 
     public Synonym() {

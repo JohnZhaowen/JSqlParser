@@ -9,7 +9,14 @@
  */
 package net.sf.jsqlparser.schema;
 
+/**
+ * 所有schema的基础接口
+ */
 public interface MultiPartName {
 
+    /**
+     * 获取全限定名
+     * @return
+     */
     String getFullyQualifiedName();
 }

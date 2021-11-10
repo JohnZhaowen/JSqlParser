@@ -25,9 +25,11 @@ public final class Server implements MultiPartName {
     public Server(String serverAndInstanceName) {
         if (serverAndInstanceName != null) {
             final Matcher matcher = SERVER_PATTERN.matcher(serverAndInstanceName);
+            //如果不匹配pattern，则直接赋值给simpleName，serverName和instanceName为null
             if (!matcher.find()) {
                 simpleName = serverAndInstanceName;
             } else {
+                //如果匹配pattern，则分别赋值给serverName和InstanceName，simpleName为null
                 setServerName(matcher.group(1));
                 setInstanceName(matcher.group(2));
             }
@@ -57,13 +59,17 @@ public final class Server implements MultiPartName {
 
     @Override
     public String getFullyQualifiedName() {
-        if (serverName != null && !serverName.isEmpty() && instanceName != null && !instanceName.
-                isEmpty()) {
+
+        if (serverName != null && !serverName.isEmpty()
+                && instanceName != null && !instanceName.isEmpty()) {
             return String.format("[%s\\%s]", serverName, instanceName);
+
         } else if (serverName != null && !serverName.isEmpty()) {
             return String.format("[%s]", serverName);
+
         } else if (simpleName != null && !simpleName.isEmpty()) {
             return simpleName;
+
         } else {
             return "";
         }
@@ -83,4 +89,13 @@ public final class Server implements MultiPartName {
         this.setInstanceName(instanceName);
         return this;
     }
+
+    public static void main(String[] args) {
+        Server server = new Server("a");
+        server.withServerName("server");
+        server.withInstanceName("instance");
+        //[server\instance]
+        System.out.println(server);
+    }
+
 }

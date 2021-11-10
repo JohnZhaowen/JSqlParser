@@ -27,19 +27,18 @@ import net.sf.jsqlparser.statement.select.UnPivot;
  */
 public class Table extends ASTNodeAccessImpl implements FromItem, MultiPartName {
 
-    // private Database database;
-    // private String schemaName;
-    // private String name;
+    //表名所在的下标
     private static final int NAME_IDX = 0;
-
+    //scheme所在的下标
     private static final int SCHEMA_IDX = 1;
-
+    //db所在的下标
     private static final int DATABASE_IDX = 2;
-
+    //server所在的下标
     private static final int SERVER_IDX = 3;
 
+    //这里将上述的0-3统一放在该列表内
     private List<String> partItems = new ArrayList<>();
-
+    //table的别名
     private Alias alias;
 
     private Pivot pivot;
@@ -70,6 +69,7 @@ public class Table extends ASTNodeAccessImpl implements FromItem, MultiPartName 
 
     public Table(List<String> partItems) {
         this.partItems = new ArrayList<>(partItems);
+        //反序，partItems中0-3的次序是反的
         Collections.reverse(this.partItems);
     }
 
@@ -127,6 +127,7 @@ public class Table extends ASTNodeAccessImpl implements FromItem, MultiPartName 
 
     private void setIndex(int idx, String value) {
         int size = partItems.size();
+        //先用null去补齐要插入的位置处前面空缺的数据
         for (int i = 0; i < idx - size + 1; i++) {
             partItems.add(null);
         }
@@ -149,7 +150,7 @@ public class Table extends ASTNodeAccessImpl implements FromItem, MultiPartName 
     @Override
     public String getFullyQualifiedName() {
         StringBuilder fqn = new StringBuilder();
-
+        //反序遍历，拼接全限定名，使用点号分割
         for (int i = partItems.size() - 1; i >= 0; i--) {
             String part = partItems.get(i);
             if (part == null) {
