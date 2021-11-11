@@ -38,7 +38,8 @@ public class FeaturesAllowed implements FeatureSetValidation, ModifyableFeatureS
             Feature.jdbcParameter,
             Feature.jdbcNamedParameter).unmodifyable();
 
-    public static final FeaturesAllowed EXPRESSIONS = new FeaturesAllowed("EXPRESSIONS", Feature.exprLike,
+    public static final FeaturesAllowed EXPRESSIONS = new FeaturesAllowed("EXPRESSIONS",
+            Feature.exprLike,
             Feature.exprSimilarTo);
 
     /**
@@ -93,34 +94,51 @@ public class FeaturesAllowed implements FeatureSetValidation, ModifyableFeatureS
      * all {@link Feature}' for SQL INSERT including {@link #SELECT} and
      * {@link Feature#selectInto}
      */
-    public static final FeaturesAllowed INSERT = new FeaturesAllowed("INSERT", Feature.insert, Feature.insertFromSelect,
-            Feature.insertModifierIgnore, Feature.insertModifierPriority, Feature.insertReturningAll,
-            Feature.insertReturningExpressionList, Feature.insertUseSet,
-            Feature.insertValues, Feature.selectInto).add(SELECT).unmodifyable();
+    public static final FeaturesAllowed INSERT = new FeaturesAllowed("INSERT",
+            Feature.insert,
+            Feature.insertFromSelect,
+            Feature.insertModifierIgnore,
+            Feature.insertModifierPriority,
+            Feature.insertReturningAll,
+            Feature.insertReturningExpressionList,
+            Feature.insertUseSet,
+            Feature.insertValues,
+            Feature.selectInto).add(SELECT).unmodifyable();
 
     /**
      * all {@link Feature}' for SQL UPDATE including {@link #SELECT}
      */
-    public static final FeaturesAllowed UPDATE = new FeaturesAllowed("UPDATE", Feature.update, Feature.updateJoins,
-            Feature.updateFrom, Feature.updateLimit, Feature.updateOrderBy, Feature.updateReturning,
-            Feature.updateUseSelect)
-            .add(SELECT).unmodifyable();
+    public static final FeaturesAllowed UPDATE = new FeaturesAllowed("UPDATE",
+            Feature.update,
+            Feature.updateJoins,
+            Feature.updateFrom,
+            Feature.updateLimit,
+            Feature.updateOrderBy,
+            Feature.updateReturning,
+            Feature.updateUseSelect).add(SELECT).unmodifyable();
 
     /**
      * all {@link Feature}' for SQL UPDATE including {@link #SELECT}
      */
-    public static final FeaturesAllowed DELETE = new FeaturesAllowed("DELETE", Feature.delete, Feature.deleteJoin,
-            Feature.deleteLimit, Feature.deleteOrderBy, Feature.deleteTables, Feature.truncate)
-            .add(SELECT).unmodifyable();
+    public static final FeaturesAllowed DELETE = new FeaturesAllowed("DELETE",
+            Feature.delete,
+            Feature.deleteJoin,
+            Feature.deleteLimit,
+            Feature.deleteOrderBy,
+            Feature.deleteTables,
+            Feature.truncate).add(SELECT).unmodifyable();
 
     /**
      * all {@link Feature}' for SQL MERGE other similar commands
      */
-    public static final FeaturesAllowed MERGE = new FeaturesAllowed("MERGE", Feature.merge, Feature.upsert,
+    public static final FeaturesAllowed MERGE = new FeaturesAllowed("MERGE",
+            Feature.merge,
+            Feature.upsert,
             Feature.insertUseDuplicateKeyUpdate).unmodifyable();
 
     /**
      * all DML {@link Feature}'s
+     * DML：操作性语言，但是应该不包括select啊，因为它是DQL？？？？？？？？？？？？？？
      */
     public static final FeaturesAllowed DML = new FeaturesAllowed("DML").add(SELECT, INSERT, UPDATE, DELETE, MERGE)
             .unmodifyable();
