@@ -15,14 +15,22 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * 由于Feature是枚举类型，所以是不可变的，那么它是如何做好可配置的呢？
+ */
 public class FeatureConfiguration {
 
     private static final Logger LOG = Logger.getLogger(FeatureConfiguration.class.getName());
 
+    /**
+     * 可配置的奥秘在这里实现
+     */
     private Map<Feature, Object> featureEnabled = new EnumMap<>(Feature.class);
 
     public FeatureConfiguration() {
         // set default-value for all switchable features
+        //将Feature中所有isConfigurable()方法返回为true的枚举放入featureEnabled map中
+        //也就是三个：allowSquareBracketQuotation，allowPostgresSpecificSyntax，allowComplexParsing
         EnumSet.allOf(Feature.class).stream().filter(Feature::isConfigurable)
         .forEach(f -> setValue(f, f.getDefaultValue()));
     }
@@ -65,5 +73,4 @@ public class FeatureConfiguration {
         Object value = getValue(f);
         return value == null ? null : String.valueOf(value);
     }
-
 }

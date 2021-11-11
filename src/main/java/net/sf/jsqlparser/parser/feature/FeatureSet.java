@@ -34,6 +34,7 @@ public interface FeatureSet {
     }
 
     /**
+     * 获取所有feature中不包含的Feature集合
      * @param features
      * @return all features within this feature set which are not contained in given
      *         set
@@ -45,6 +46,7 @@ public interface FeatureSet {
     }
 
     /**
+     * 获取所有包含在features中的Feature集合
      * @param features
      * @return all features within this feature set which are contained in given
      *         set too.
