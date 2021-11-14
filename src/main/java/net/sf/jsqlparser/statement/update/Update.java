@@ -39,6 +39,110 @@ public class Update implements Statement {
     private boolean returningAllColumns = false;
     private List<SelectExpressionItem> returningExpressionList = null;
 
+
+    @Override
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+
+        if (withItemsList != null && !withItemsList.isEmpty()) {
+            b.append("WITH ");
+            for (Iterator<WithItem> iter = withItemsList.iterator(); iter.hasNext();) {
+                WithItem withItem = iter.next();
+                b.append(withItem);
+                if (iter.hasNext()) {
+                    b.append(",");
+                }
+                b.append(" ");
+            }
+        }
+        b.append("UPDATE ");
+        b.append(table);
+        if (startJoins != null) {
+            for (Join join : startJoins) {
+                if (join.isSimple()) {
+                    b.append(", ").append(join);
+                } else {
+                    b.append(" ").append(join);
+                }
+            }
+        }
+        b.append(" SET ");
+
+        int j = 0;
+        for (UpdateSet updateSet : updateSets) {
+            if (j > 0) {
+                b.append(", ");
+            }
+
+            if (updateSet.usingBracketsForColumns) {
+                b.append("(");
+            }
+
+            for (int i = 0; i < updateSet.columns.size(); i++) {
+                if (i > 0) {
+                    b.append(", ");
+                }
+                b.append(updateSet.columns.get(i));
+            }
+
+            if (updateSet.usingBracketsForColumns) {
+                b.append(")");
+            }
+
+            b.append(" = ");
+
+            if (updateSet.usingBracketsForValues) {
+                b.append("(");
+            }
+
+            for (int i = 0; i < updateSet.expressions.size(); i++) {
+                if (i > 0) {
+                    b.append(", ");
+                }
+                b.append(updateSet.expressions.get(i));
+            }
+            if (updateSet.usingBracketsForValues) {
+                b.append(")");
+            }
+
+            j++;
+        }
+        if (fromItem != null) {
+            b.append(" FROM ").append(fromItem);
+            if (joins != null) {
+                for (Join join : joins) {
+                    if (join.isSimple()) {
+                        b.append(", ").append(join);
+                    } else {
+                        b.append(" ").append(join);
+                    }
+                }
+            }
+        }
+
+        if (where != null) {
+            b.append(" WHERE ");
+            b.append(where);
+        }
+        if (orderByElements != null) {
+            b.append(PlainSelect.orderByToString(orderByElements));
+        }
+        if (limit != null) {
+            b.append(limit);
+        }
+
+        if (isReturningAllColumns()) {
+            b.append(" RETURNING *");
+        } else if (getReturningExpressionList() != null) {
+            b.append(" RETURNING ").append(PlainSelect.
+                    getStringList(getReturningExpressionList(), true, false));
+        }
+
+        return b.toString();
+    }
+
+
     public ArrayList<UpdateSet> getUpdateSets() {
         return updateSets;
     }
@@ -231,108 +335,6 @@ public class Update implements Statement {
 
     public void setReturningExpressionList(List<SelectExpressionItem> returningExpressionList) {
         this.returningExpressionList = returningExpressionList;
-    }
-
-    @Override
-    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-
-        if (withItemsList != null && !withItemsList.isEmpty()) {
-            b.append("WITH ");
-            for (Iterator<WithItem> iter = withItemsList.iterator(); iter.hasNext();) {
-                WithItem withItem = iter.next();
-                b.append(withItem);
-                if (iter.hasNext()) {
-                    b.append(",");
-                }
-                b.append(" ");
-            }
-        }
-        b.append("UPDATE ");
-        b.append(table);
-        if (startJoins != null) {
-            for (Join join : startJoins) {
-                if (join.isSimple()) {
-                    b.append(", ").append(join);
-                } else {
-                    b.append(" ").append(join);
-                }
-            }
-        }
-        b.append(" SET ");
-
-        int j = 0;
-        for (UpdateSet updateSet : updateSets) {
-            if (j > 0) {
-                b.append(", ");
-            }
-
-            if (updateSet.usingBracketsForColumns) {
-                b.append("(");
-            }
-
-            for (int i = 0; i < updateSet.columns.size(); i++) {
-                if (i > 0) {
-                    b.append(", ");
-                }
-                b.append(updateSet.columns.get(i));
-            }
-
-            if (updateSet.usingBracketsForColumns) {
-                b.append(")");
-            }
-
-            b.append(" = ");
-
-            if (updateSet.usingBracketsForValues) {
-                b.append("(");
-            }
-
-            for (int i = 0; i < updateSet.expressions.size(); i++) {
-                if (i > 0) {
-                    b.append(", ");
-                }
-                b.append(updateSet.expressions.get(i));
-            }
-            if (updateSet.usingBracketsForValues) {
-                b.append(")");
-            }
-
-            j++;
-        }
-        if (fromItem != null) {
-            b.append(" FROM ").append(fromItem);
-            if (joins != null) {
-                for (Join join : joins) {
-                    if (join.isSimple()) {
-                        b.append(", ").append(join);
-                    } else {
-                        b.append(" ").append(join);
-                    }
-                }
-            }
-        }
-
-        if (where != null) {
-            b.append(" WHERE ");
-            b.append(where);
-        }
-        if (orderByElements != null) {
-            b.append(PlainSelect.orderByToString(orderByElements));
-        }
-        if (limit != null) {
-            b.append(limit);
-        }
-
-        if (isReturningAllColumns()) {
-            b.append(" RETURNING *");
-        } else if (getReturningExpressionList() != null) {
-            b.append(" RETURNING ").append(PlainSelect.
-                    getStringList(getReturningExpressionList(), true, false));
-        }
-
-        return b.toString();
     }
 
     public Update withTable(Table table) {

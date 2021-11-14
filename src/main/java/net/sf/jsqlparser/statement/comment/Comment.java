@@ -27,6 +27,20 @@ public class Comment implements Statement {
         statementVisitor.visit(this);
     }
 
+    @Override
+    public String toString() {
+        String sql = "COMMENT ON ";
+        if (table != null) {
+            sql += "TABLE " + table + " ";
+        } else if (column != null) {
+            sql += "COLUMN " + column + " ";
+        } else if (view != null) {
+            sql += "VIEW " + view + " ";
+        }
+        sql += "IS " + comment;
+        return sql;
+    }
+
     public Table getTable() {
         return table;
     }
@@ -57,20 +71,6 @@ public class Comment implements Statement {
 
     public void setComment(StringValue comment) {
         this.comment = comment;
-    }
-
-    @Override
-    public String toString() {
-        String sql = "COMMENT ON ";
-        if (table != null) {
-            sql += "TABLE " + table + " ";
-        } else if (column != null) {
-            sql += "COLUMN " + column + " ";
-        } else if (view != null) {
-            sql += "VIEW " + view + " ";
-        }
-        sql += "IS " + comment;
-        return sql;
     }
 
     public Comment withTable(Table table) {

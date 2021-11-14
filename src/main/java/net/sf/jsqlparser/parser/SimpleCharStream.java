@@ -149,6 +149,7 @@ public class SimpleCharStream {
 
     /**
      * Start.
+     *
      * @return the character read
      * @throws IOException
      */
@@ -204,6 +205,7 @@ public class SimpleCharStream {
 
     /**
      * Read a character.
+     *
      * @return the character read
      * @throws IOException
      */
@@ -231,7 +233,7 @@ public class SimpleCharStream {
         return c;
     }
 
-    
+
     /**
      * @return the column
      * @deprecated @see #getEndColumn
@@ -241,7 +243,7 @@ public class SimpleCharStream {
         return bufcolumn[bufpos];
     }
 
-    
+
     /**
      * @return the line
      * @deprecated @see #getEndLine
@@ -281,6 +283,7 @@ public class SimpleCharStream {
 
     /**
      * Backup a number of characters.
+     *
      * @param amount
      */
     public void backup(int amount) {
@@ -294,13 +297,14 @@ public class SimpleCharStream {
 
     /**
      * Constructor
+     *
      * @param dstream
      * @param startline
      * @param startcolumn
      * @param buffersize
      */
     public SimpleCharStream(Provider dstream, int startline,
-            int startcolumn, int buffersize) {
+                            int startcolumn, int buffersize) {
         inputStream = dstream;
         isStringProvider = dstream instanceof StringProvider;
         line = startline;
@@ -321,17 +325,19 @@ public class SimpleCharStream {
 
     /**
      * Constructor
+     *
      * @param dstream
      * @param startline
      * @param startcolumn
      */
     public SimpleCharStream(Provider dstream, int startline,
-            int startcolumn) {
+                            int startcolumn) {
         this(dstream, startline, startcolumn, 4096);
     }
 
     /**
      * Constructor
+     *
      * @param dstream
      */
     public SimpleCharStream(Provider dstream) {
@@ -340,13 +346,14 @@ public class SimpleCharStream {
 
     /**
      * Reinitialise.
+     *
      * @param dstream
      * @param startline
      * @param startcolumn
      * @param buffersize
      */
     public void ReInit(Provider dstream, int startline,
-            int startcolumn, int buffersize) {
+                       int startcolumn, int buffersize) {
         inputStream = dstream;
         isStringProvider = dstream instanceof StringProvider;
         line = startline;
@@ -371,19 +378,21 @@ public class SimpleCharStream {
 
     /**
      * Reinitialise.
+     *
      * @param dstream
      * @param startline
      * @param startcolumn
      */
     public void ReInit(Provider dstream, int startline,
-            int startcolumn) {
+                       int startcolumn) {
         ReInit(dstream, startline, startcolumn, 4096);
     }
 
-   /**
-    * Reinitialise.
-    * @param dstream
-    */
+    /**
+     * Reinitialise.
+     *
+     * @param dstream
+     */
     public void ReInit(Provider dstream) {
         ReInit(dstream, 1, 1, 4096);
     }
@@ -420,7 +429,7 @@ public class SimpleCharStream {
 
         if (isStringProvider) {
             String str = ((StringProvider) inputStream)._string;
-            if ((bufpos + 1) >= len) {            
+            if ((bufpos + 1) >= len) {
                 str.getChars(bufpos - len + 1, bufpos - len + 1 + len, ret, 0);
             } else {
                 str.getChars(bufsize - (len - bufpos - 1), bufsize - (len - bufpos - 1) + len - bufpos - 1, ret, 0);
@@ -450,6 +459,7 @@ public class SimpleCharStream {
 
     /**
      * Method to adjust line and column numbers for the start of a token.
+     *
      * @param newLine
      * @param newCol
      */

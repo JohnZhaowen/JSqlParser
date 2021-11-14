@@ -14,12 +14,49 @@ package net.sf.jsqlparser.parser;
 import net.sf.jsqlparser.parser.feature.Feature;
 import net.sf.jsqlparser.parser.feature.FeatureConfiguration;
 
+import java.io.PrintStream;
+
 /**
  * Token Manager.
  */
 @SuppressWarnings("unused")
 public class CCJSqlParserTokenManager implements CCJSqlParserConstants {
     public FeatureConfiguration configuration = new FeatureConfiguration();
+
+    protected SimpleCharStream input_stream;
+
+    private final int[] jjrounds = new int[260];
+    private final int[] jjstateSet = new int[2 * 260];
+    private final StringBuilder jjimage = new StringBuilder();
+    private StringBuilder image = jjimage;
+    private int jjimageLen;
+    private int lengthOfMatch;
+    protected int curChar;
+
+    /**
+     * Debug output.
+     */
+    public PrintStream debugStream = System.out;
+
+
+    /**
+     * Constructor.
+     */
+    public CCJSqlParserTokenManager(SimpleCharStream stream) {
+
+        if (SimpleCharStream.staticFlag)
+            throw new RuntimeException("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
+
+        input_stream = stream;
+    }
+
+    /**
+     * Constructor.
+     */
+    public CCJSqlParserTokenManager(SimpleCharStream stream, int lexState) {
+        ReInit(stream);
+        SwitchTo(lexState);
+    }
 
     public void CommonTokenAction(Token t) {
         t.absoluteBegin = getCurrentTokenAbsolutePosition();
@@ -32,10 +69,6 @@ public class CCJSqlParserTokenManager implements CCJSqlParserConstants {
         return -1;
     }
 
-    /**
-     * Debug output.
-     */
-    public java.io.PrintStream debugStream = System.out;
 
     /**
      * Set debug output.
@@ -6137,24 +6170,6 @@ public class CCJSqlParserTokenManager implements CCJSqlParserConstants {
         } while (start++ != end);
     }
 
-    /**
-     * Constructor.
-     */
-    public CCJSqlParserTokenManager(SimpleCharStream stream) {
-
-        if (SimpleCharStream.staticFlag)
-            throw new RuntimeException("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
-
-        input_stream = stream;
-    }
-
-    /**
-     * Constructor.
-     */
-    public CCJSqlParserTokenManager(SimpleCharStream stream, int lexState) {
-        ReInit(stream);
-        SwitchTo(lexState);
-    }
 
     /**
      * Reinitialise parser.
@@ -6240,13 +6255,5 @@ public class CCJSqlParserTokenManager implements CCJSqlParserConstants {
             0x0L, 0x0L, 0x0L, 0x0L,
             0x0L, 0x0L,
     };
-    protected SimpleCharStream input_stream;
 
-    private final int[] jjrounds = new int[260];
-    private final int[] jjstateSet = new int[2 * 260];
-    private final StringBuilder jjimage = new StringBuilder();
-    private StringBuilder image = jjimage;
-    private int jjimageLen;
-    private int lengthOfMatch;
-    protected int curChar;
 }

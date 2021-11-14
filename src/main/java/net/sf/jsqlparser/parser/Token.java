@@ -28,6 +28,7 @@ public class Token extends BaseToken implements java.io.Serializable {
      * An integer that describes the kind of this token.  This numbering
      * system is determined by JavaCCParser, and a table of these numbers is
      * stored in the file ...Constants.java.
+     * 代表着这个token的类型，请查看CCJSqlParserConstants
      */
     public int kind;
 

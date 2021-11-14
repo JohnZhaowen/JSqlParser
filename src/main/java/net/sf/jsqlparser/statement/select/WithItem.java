@@ -28,6 +28,36 @@ public class WithItem implements SelectBody {
     private SubSelect subSelect;
     private boolean recursive;
 
+    @Override
+    @SuppressWarnings({"PMD.CyclomaticComplexity"})
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(recursive ? "RECURSIVE " : "");
+        builder.append(name);
+        builder.append(
+                (withItemList != null) ? " " + PlainSelect.getStringList(withItemList, true, true) : "");
+        builder.append(" AS ");
+
+        if (useValues) {
+            builder.append("(VALUES ");
+            ExpressionList expressionList = (ExpressionList) itemsList;
+            builder.append(
+                    PlainSelect.getStringList(expressionList.getExpressions(), true, useBracketsForValues));
+            builder.append(")");
+        } else {
+            builder.append(subSelect.isUseBrackets() ? "" : "(");
+            builder.append(subSelect);
+
+            builder.append(subSelect.isUseBrackets() ? "" : ")");
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public void accept(SelectVisitor visitor) {
+        visitor.visit(this);
+    }
+
     /**
      * Get the values (as VALUES (...) or SELECT)
      *
@@ -109,35 +139,6 @@ public class WithItem implements SelectBody {
         this.withItemList = withItemList;
     }
 
-    @Override
-    @SuppressWarnings({"PMD.CyclomaticComplexity"})
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(recursive ? "RECURSIVE " : "");
-        builder.append(name);
-        builder.append(
-                (withItemList != null) ? " " + PlainSelect.getStringList(withItemList, true, true) : "");
-        builder.append(" AS ");
-
-        if (useValues) {
-            builder.append("(VALUES ");
-            ExpressionList expressionList = (ExpressionList) itemsList;
-            builder.append(
-                    PlainSelect.getStringList(expressionList.getExpressions(), true, useBracketsForValues));
-            builder.append(")");
-        } else {
-            builder.append(subSelect.isUseBrackets() ? "" : "(");
-            builder.append(subSelect);
-
-            builder.append(subSelect.isUseBrackets() ? "" : ")");
-        }
-        return builder.toString();
-    }
-
-    @Override
-    public void accept(SelectVisitor visitor) {
-        visitor.visit(this);
-    }
 
     public WithItem withName(String name) {
         this.setName(name);

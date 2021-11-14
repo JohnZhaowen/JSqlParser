@@ -69,6 +69,23 @@ public class CCJSqlParser extends AbstractJSqlParser<CCJSqlParser>/*@bgen(jjtree
     public int bracketsCounter = 0;
     public int caseCounter = 0;
 
+    /**
+     * Generated Token Manager.
+     */
+    public CCJSqlParserTokenManager token_source;
+    SimpleCharStream jj_input_stream;
+    /**
+     * Current token.
+     */
+    public Token token;
+    /**
+     * Next token.
+     */
+    public Token jj_nt;
+    private int jj_ntk;
+    private Token jj_scanpos, jj_lastpos;
+    private int jj_la;
+
     public CCJSqlParser withConfiguration(FeatureConfiguration configuration) {
         token_source.configuration = configuration;
         return this;
@@ -30982,22 +30999,7 @@ Extended usage of object names - part 2. Using within multipart names as followi
         return false;
     }
 
-    /**
-     * Generated Token Manager.
-     */
-    public CCJSqlParserTokenManager token_source;
-    SimpleCharStream jj_input_stream;
-    /**
-     * Current token.
-     */
-    public Token token;
-    /**
-     * Next token.
-     */
-    public Token jj_nt;
-    private int jj_ntk;
-    private Token jj_scanpos, jj_lastpos;
-    private int jj_la;
+
     /**
      * Whether we are looking ahead.
      */

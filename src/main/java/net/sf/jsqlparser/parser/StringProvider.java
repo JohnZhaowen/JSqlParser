@@ -25,6 +25,14 @@ public class StringProvider implements Provider {
         _size = string.length();
     }
 
+    /**
+     * 将_string中的从off开始读取len长度的字符，放入cbuf中
+     * @param cbuf 存放结果字符
+     * @param off 开始读取的位置
+     * @param len 读取的最大字符长度
+     * @return
+     * @throws IOException
+     */
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
         int numCharsOutstandingInString = _size - _position;
@@ -52,6 +60,21 @@ public class StringProvider implements Provider {
     public void close() throws IOException {
         _string = null;
     }
+
+    public static void main(String[] args) throws IOException {
+        StringProvider stringProvider = new StringProvider("My name is john, your name is alice");
+        char[] res1 = new char[10];
+        stringProvider.read(res1, 0, 10);
+        //My name is
+        System.out.println(new String(res1));
+
+        char[] res2 = new char[10];
+        stringProvider.read(res2, 0, 10);
+        // john, you
+        System.out.println(new String(res2));
+
+    }
+
 
 }
 /* JavaCC - OriginalChecksum=378309cdcf0d00ac5d27d6c7a2b4f010 (do not edit this line) */

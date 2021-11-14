@@ -9,12 +9,6 @@
  */
 package net.sf.jsqlparser.statement.insert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.OracleHint;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
@@ -26,6 +20,8 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.WithItem;
+
+import java.util.*;
 
 @SuppressWarnings({"PMD.CyclomaticComplexity"})
 public class Insert implements Statement {
@@ -46,11 +42,90 @@ public class Insert implements Statement {
     private boolean returningAllColumns = false;
 
     private List<SelectExpressionItem> returningExpressionList = null;
-    
+
     private boolean useSet = false;
     private List<Column> setColumns;
     private List<Expression> setExpressionList;
     private List<WithItem> withItemsList;
+
+
+    @Override
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity"})
+    public String toString() {
+        StringBuilder sql = new StringBuilder();
+        if (withItemsList != null && !withItemsList.isEmpty()) {
+            sql.append("WITH ");
+            for (Iterator<WithItem> iter = withItemsList.iterator(); iter.hasNext(); ) {
+                WithItem withItem = iter.next();
+                sql.append(withItem);
+                if (iter.hasNext()) {
+                    sql.append(",");
+                }
+                sql.append(" ");
+            }
+        }
+        sql.append("INSERT ");
+        if (modifierPriority != null) {
+            sql.append(modifierPriority.name()).append(" ");
+        }
+        if (modifierIgnore) {
+            sql.append("IGNORE ");
+        }
+        sql.append("INTO ");
+        sql.append(table).append(" ");
+        if (columns != null) {
+            sql.append(PlainSelect.getStringList(columns, true, true)).append(" ");
+        }
+
+        if (useValues) {
+            sql.append("VALUES ");
+        }
+
+        if (itemsList != null) {
+            sql.append(itemsList);
+        } else {
+            if (useSelectBrackets) {
+                sql.append("(");
+            }
+            if (select != null) {
+                sql.append(select);
+            }
+            if (useSelectBrackets) {
+                sql.append(")");
+            }
+        }
+
+        if (useSet) {
+            sql.append("SET ");
+            for (int i = 0; i < getSetColumns().size(); i++) {
+                if (i != 0) {
+                    sql.append(", ");
+                }
+                sql.append(setColumns.get(i)).append(" = ");
+                sql.append(setExpressionList.get(i));
+            }
+        }
+
+        if (useDuplicate) {
+            sql.append(" ON DUPLICATE KEY UPDATE ");
+            for (int i = 0; i < getDuplicateUpdateColumns().size(); i++) {
+                if (i != 0) {
+                    sql.append(", ");
+                }
+                sql.append(duplicateUpdateColumns.get(i)).append(" = ");
+                sql.append(duplicateUpdateExpressionList.get(i));
+            }
+        }
+
+        if (isReturningAllColumns()) {
+            sql.append(" RETURNING *");
+        } else if (getReturningExpressionList() != null) {
+            sql.append(" RETURNING ").append(PlainSelect.
+                    getStringList(getReturningExpressionList(), true, false));
+        }
+
+        return sql.toString();
+    }
 
     @Override
     public void accept(StatementVisitor statementVisitor) {
@@ -64,7 +139,7 @@ public class Insert implements Statement {
     public void setTable(Table name) {
         table = name;
     }
-    
+
     public OracleHint getOracleHint() {
         return oracleHint;
     }
@@ -206,89 +281,12 @@ public class Insert implements Statement {
         this.withItemsList = withItemsList;
     }
 
-    @Override
-    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity"})
-    public String toString() {
-        StringBuilder sql = new StringBuilder();
-        if (withItemsList != null && !withItemsList.isEmpty()) {
-            sql.append("WITH ");
-            for (Iterator<WithItem> iter = withItemsList.iterator(); iter.hasNext();) {
-                WithItem withItem = iter.next();
-                sql.append(withItem);
-                if (iter.hasNext()) {
-                    sql.append(",");
-                }
-                sql.append(" ");
-            }
-        }
-        sql.append("INSERT ");
-        if (modifierPriority != null) {
-            sql.append(modifierPriority.name()).append(" ");
-        }
-        if (modifierIgnore) {
-            sql.append("IGNORE ");
-        }
-        sql.append("INTO ");
-        sql.append(table).append(" ");
-        if (columns != null) {
-            sql.append(PlainSelect.getStringList(columns, true, true)).append(" ");
-        }
 
-        if (useValues) {
-            sql.append("VALUES ");
-        }
-
-        if (itemsList != null) {
-            sql.append(itemsList);
-        } else {
-            if (useSelectBrackets) {
-                sql.append("(");
-            }
-            if (select != null) {
-                sql.append(select);
-            }
-            if (useSelectBrackets) {
-                sql.append(")");
-            }
-        }
-        
-        if (useSet) {
-            sql.append("SET ");
-            for (int i = 0; i < getSetColumns().size(); i++) {
-                if (i != 0) {
-                    sql.append(", ");
-                }
-                sql.append(setColumns.get(i)).append(" = ");
-                sql.append(setExpressionList.get(i));
-            }
-        }
-
-        if (useDuplicate) {
-            sql.append(" ON DUPLICATE KEY UPDATE ");
-            for (int i = 0; i < getDuplicateUpdateColumns().size(); i++) {
-                if (i != 0) {
-                    sql.append(", ");
-                }
-                sql.append(duplicateUpdateColumns.get(i)).append(" = ");
-                sql.append(duplicateUpdateExpressionList.get(i));
-            }
-        }
-
-        if (isReturningAllColumns()) {
-            sql.append(" RETURNING *");
-        } else if (getReturningExpressionList() != null) {
-            sql.append(" RETURNING ").append(PlainSelect.
-                    getStringList(getReturningExpressionList(), true, false));
-        }
-
-        return sql.toString();
-    }
-    
     public Insert withWithItemsList(List<WithItem> withList) {
         this.withItemsList = withList;
         return this;
     }
-    
+
     public Insert withUseValues(boolean useValues) {
         this.setUseValues(useValues);
         return this;

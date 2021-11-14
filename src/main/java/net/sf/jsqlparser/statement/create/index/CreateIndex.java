@@ -23,35 +23,6 @@ public class CreateIndex implements Statement {
     private List<String> tailParameters;
 
     @Override
-    public void accept(StatementVisitor statementVisitor) {
-        statementVisitor.visit(this);
-    }
-
-    public Index getIndex() {
-        return index;
-    }
-
-    public void setIndex(Index index) {
-        this.index = index;
-    }
-
-    public Table getTable() {
-        return table;
-    }
-
-    public void setTable(Table table) {
-        this.table = table;
-    }
-
-    public List<String> getTailParameters() {
-        return tailParameters;
-    }
-
-    public void setTailParameters(List<String> tailParameters) {
-        this.tailParameters = tailParameters;
-    }
-
-    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
 
@@ -90,6 +61,35 @@ public class CreateIndex implements Statement {
         }
 
         return buffer.toString();
+    }
+
+    @Override
+    public void accept(StatementVisitor statementVisitor) {
+        statementVisitor.visit(this);
+    }
+
+    public Index getIndex() {
+        return index;
+    }
+
+    public void setIndex(Index index) {
+        this.index = index;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
+    public List<String> getTailParameters() {
+        return tailParameters;
+    }
+
+    public void setTailParameters(List<String> tailParameters) {
+        this.tailParameters = tailParameters;
     }
 
     public CreateIndex withTable(Table table) {

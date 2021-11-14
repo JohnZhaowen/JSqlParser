@@ -19,16 +19,13 @@ import java.util.Objects;
 public class SavepointStatement implements Statement {
     private String savepointName;
 
-    public String getSavepointName() {
-        return savepointName;
-    }
-
-    public void setSavepointName(String savepointName) {
-        this.savepointName = Objects.requireNonNull(savepointName, "The Savepoint Name must not be NULL.");
-    }
-
     public SavepointStatement(String savepointName) {
         this.savepointName = Objects.requireNonNull(savepointName, "The Savepoint Name must not be NULL.");
+    }
+
+    @Override
+    public void accept(StatementVisitor statementVisitor) {
+         statementVisitor.visit(this);
     }
 
     @Override
@@ -36,8 +33,11 @@ public class SavepointStatement implements Statement {
         return "SAVEPOINT " + savepointName;
     }
 
-    @Override
-    public void accept(StatementVisitor statementVisitor) {
-         statementVisitor.visit(this);
+    public String getSavepointName() {
+        return savepointName;
+    }
+
+    public void setSavepointName(String savepointName) {
+        this.savepointName = Objects.requireNonNull(savepointName, "The Savepoint Name must not be NULL.");
     }
 }

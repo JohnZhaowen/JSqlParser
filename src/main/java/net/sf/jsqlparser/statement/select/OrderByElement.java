@@ -13,8 +13,13 @@ import net.sf.jsqlparser.expression.Expression;
 
 public class OrderByElement {
 
+    /**
+     * null的排序方式
+     */
     public enum NullOrdering {
+        //null值放在前面
         NULLS_FIRST,
+        //null值放在后面
         NULLS_LAST
     }
 
@@ -23,40 +28,8 @@ public class OrderByElement {
     private boolean ascDescPresent = false;
     private NullOrdering nullOrdering;
 
-    public boolean isAsc() {
-        return asc;
-    }
-
-    public NullOrdering getNullOrdering() {
-        return nullOrdering;
-    }
-
-    public void setNullOrdering(NullOrdering nullOrdering) {
-        this.nullOrdering = nullOrdering;
-    }
-
-    public void setAsc(boolean asc) {
-        this.asc = asc;
-    }
-
-    public void setAscDescPresent(boolean ascDescPresent) {
-        this.ascDescPresent = ascDescPresent;
-    }
-
-    public boolean isAscDescPresent() {
-        return ascDescPresent;
-    }
-
     public void accept(OrderByVisitor orderByVisitor) {
         orderByVisitor.visit(this);
-    }
-
-    public Expression getExpression() {
-        return expression;
-    }
-
-    public void setExpression(Expression expression) {
-        this.expression = expression;
     }
 
     @Override
@@ -77,6 +50,42 @@ public class OrderByElement {
         return b.toString();
     }
 
+    public boolean isAsc() {
+        return asc;
+    }
+
+    public void setAsc(boolean asc) {
+        this.asc = asc;
+    }
+
+    public NullOrdering getNullOrdering() {
+        return nullOrdering;
+    }
+
+    public void setNullOrdering(NullOrdering nullOrdering) {
+        this.nullOrdering = nullOrdering;
+    }
+
+    public void setAscDescPresent(boolean ascDescPresent) {
+        this.ascDescPresent = ascDescPresent;
+    }
+
+    public boolean isAscDescPresent() {
+        return ascDescPresent;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
+
+    public <E extends Expression> E getExpression(Class<E> type) {
+        return type.cast(getExpression());
+    }
+
+    public void setExpression(Expression expression) {
+        this.expression = expression;
+    }
+
     public OrderByElement withExpression(Expression expression) {
         this.setExpression(expression);
         return this;
@@ -95,10 +104,6 @@ public class OrderByElement {
     public OrderByElement withNullOrdering(NullOrdering nullOrdering) {
         this.setNullOrdering(nullOrdering);
         return this;
-    }
-
-    public <E extends Expression> E getExpression(Class<E> type) {
-        return type.cast(getExpression());
     }
 
 }

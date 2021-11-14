@@ -19,6 +19,14 @@ public class Truncate implements Statement {
     boolean cascade;  // to support TRUNCATE TABLE ... CASCADE
 
     @Override
+    public String toString() {
+        if (cascade) {
+            return "TRUNCATE TABLE " + table + " CASCADE";
+        }
+        return "TRUNCATE TABLE " + table;
+    }
+
+    @Override
     public void accept(StatementVisitor statementVisitor) {
         statementVisitor.visit(this);
     }
@@ -37,14 +45,6 @@ public class Truncate implements Statement {
 
     public void setCascade(boolean c) {
         cascade = c;
-    }
-
-    @Override
-    public String toString() {
-        if (cascade) {
-            return "TRUNCATE TABLE " + table + " CASCADE";
-        }
-        return "TRUNCATE TABLE " + table;
     }
 
     public Truncate withTable(Table table) {

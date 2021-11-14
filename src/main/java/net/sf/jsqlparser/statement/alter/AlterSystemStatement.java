@@ -29,34 +29,34 @@ public class AlterSystemStatement implements Statement {
         this.parameters = Objects.requireNonNull(parameters, "The PARAMETERS List must not be null although it can be empty.");
     }
 
+    @Override
+    public String toString() {
+        return appendTo(new StringBuilder()).toString();
+    }
+
+    @Override
+    public void accept(StatementVisitor statementVisitor) {
+        statementVisitor.visit(this);
+      }
+
+    private static void appendParameters(StringBuilder builder, List<String> parameters) {
+        for (String s: parameters) {
+            builder.append(" ").append(s);
+        }
+    }
+
+    public StringBuilder appendTo(StringBuilder builder) {
+        builder.append("ALTER SYSTEM ").append(operation);
+        appendParameters(builder, parameters);
+        return builder;
+    }
+
     public AlterSystemOperation getOperation() {
         return operation;
     }
 
     public List<String> getParameters() {
         return parameters;
-    }
-      
-    @Override
-    public void accept(StatementVisitor statementVisitor) {
-        statementVisitor.visit(this);
-      }
-    
-    private static void appendParameters(StringBuilder builder, List<String> parameters) {
-        for (String s: parameters) {
-            builder.append(" ").append(s);
-        }
-    }
-    
-    public StringBuilder appendTo(StringBuilder builder) {
-        builder.append("ALTER SYSTEM ").append(operation);
-        appendParameters(builder, parameters);
-        return builder;
-    }
-    
-    @Override
-    public String toString() {
-        return appendTo(new StringBuilder()).toString();
     }
 
 }

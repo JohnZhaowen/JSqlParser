@@ -9,11 +9,6 @@
  */
 package net.sf.jsqlparser.statement.replace;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
 import net.sf.jsqlparser.schema.Column;
@@ -21,6 +16,8 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.StatementVisitor;
 import net.sf.jsqlparser.statement.select.PlainSelect;
+
+import java.util.*;
 
 public class Replace implements Statement {
 
@@ -30,6 +27,44 @@ public class Replace implements Statement {
     private List<Expression> expressions;
     private boolean useValues = true;
     private boolean useIntoTables = false;
+
+    @Override
+    public String toString() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("REPLACE ");
+        if (isUseIntoTables()) {
+            sql.append("INTO ");
+        }
+        sql.append(table);
+
+        if (expressions != null && columns != null) {
+            // the SET col1=exp1, col2=exp2 case
+            sql.append(" SET ");
+            // each element from expressions match up with a column from columns.
+            for (int i = 0, s = columns.size(); i < s; i++) {
+                sql.append(columns.get(i)).append("=").append(expressions.get(i));
+                sql.append(i < s - 1
+                        ? ", "
+                        : "");
+            }
+        } else if (columns != null) {
+            // the REPLACE mytab (col1, col2) [...] case
+            sql.append(" ").append(PlainSelect.getStringList(columns, true, true));
+        }
+
+        if (itemsList != null) {
+            // REPLACE mytab SELECT * FROM mytab2
+            // or VALUES ('as', ?, 565)
+
+            if (useValues) {
+                sql.append(" VALUES");
+            }
+
+            sql.append(" ").append(itemsList);
+        }
+
+        return sql.toString();
+    }
 
     @Override
     public void accept(StatementVisitor statementVisitor) {
@@ -87,44 +122,6 @@ public class Replace implements Statement {
 
     public void setUseValues(boolean useValues) {
         this.useValues = useValues;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("REPLACE ");
-        if (isUseIntoTables()) {
-            sql.append("INTO ");
-        }
-        sql.append(table);
-
-        if (expressions != null && columns != null) {
-            // the SET col1=exp1, col2=exp2 case
-            sql.append(" SET ");
-            // each element from expressions match up with a column from columns.
-            for (int i = 0, s = columns.size(); i < s; i++) {
-                sql.append(columns.get(i)).append("=").append(expressions.get(i));
-                sql.append( i < s - 1 
-                                      ? ", " 
-                                      : "" );
-            }
-        } else if (columns != null) {
-            // the REPLACE mytab (col1, col2) [...] case
-            sql.append(" ").append(PlainSelect.getStringList(columns, true, true));
-        }
-
-        if (itemsList != null) {
-            // REPLACE mytab SELECT * FROM mytab2
-            // or VALUES ('as', ?, 565)
-
-            if (useValues) {
-                sql.append(" VALUES");
-            }
-
-            sql.append(" ").append(itemsList);
-        }
-
-        return sql.toString();
     }
 
     public Replace withUseValues(boolean useValues) {

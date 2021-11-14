@@ -17,6 +17,7 @@ import java.util.EnumSet;
 
 /**
  * A {@code SHOW TABLES} statement
+ *
  * @see <a href="https://dev.mysql.com/doc/refman/8.0/en/show-tables.html">MySQL show tables</a>
  */
 public class ShowTablesStatement implements Statement {
